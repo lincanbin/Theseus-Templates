@@ -1,0 +1,66 @@
+@import('../component/Layout')
+@import('../component/Content')
+@import('../component/Sider')
+
+@data
+    {
+        "domainName" : {
+            "static": "https://cdn.94cb.com/static"
+        },
+        "title": "Carbon Forum",
+        "qrCode": {
+            "imgSrc": "https://www.94cb.com/upload/donate_small.png",
+            "link": "https://www.94cb.com/"
+        },
+        "article": [
+            {"title" : "aaaa", "link": "/article/1", "text" : "aaaa is a good boy. "},
+            {"title" : "bbbb", "link": "/article/2", "text" : "bbbb is a good boy. "},
+            {"title" : "cccc", "link": "/article/3", "text" : "bbbb is a good boy. "},
+        ]
+    }
+@enddata
+
+
+@push('metas')
+    <title></title>
+    <script src="{{ domainName.static }}/global.js"></script>
+@endpush
+
+@each('Article')
+    <div class="aritile">
+        <div class="user-info">
+            <img class="avatar"
+                src="{{ props.author.avatarUrl }}"
+                alt="{{ props.author.name }}"
+            />
+            <div class="user-name">
+                {{ props.author.name }}
+            </div>
+        </div>
+        <div class="article-text">
+            <a href="{{ props.link }}">
+                <h2>
+                    {{ props.title }}
+                </h2>
+            </a>
+            {{ props.text }}
+        </div>
+        <div class="article-date">
+            {{ formatDate(props.date) }}
+        </div>
+    </div>
+@endeach
+
+<Layout>
+    <Content>
+        <Article data=""/ >
+    </Content>
+    <Sider qrCode="{{ qrCode }}">
+        SiderContent
+    </Sider>
+</Layout>
+
+
+@push('bottom')
+    <script src="{{ domainName.static }}/home.js"></script>
+@endpush

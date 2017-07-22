@@ -1,0 +1,5 @@
+@component('Content')
+<div class="content">
+    @yield
+</div>
+@endcomponent

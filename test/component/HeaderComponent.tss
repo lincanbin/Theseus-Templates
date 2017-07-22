@@ -1,0 +1,6 @@
+@component('Header')
+<Navigation>
+    <Link to="/Components">Components</Link>
+    <Link to="/Templates">Templates</Link>
+</Navigation>
+@endcomponent
