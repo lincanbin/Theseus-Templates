@@ -1,4 +1,4 @@
-@component('sidebar')
+@component('Sidebar')
 <div class="sider">
     <a href="{{ props.qrCode.link }}">
         <img src="{{ props.qrCode.imgSrc }}" />
