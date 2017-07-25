@@ -1,8 +1,8 @@
 <?php
 require __DIR__ . '/../src/TheseusParse.php';
+require __DIR__ . '/../src/Theseus.php';
 
-use lincanbin\TheseusParse;
+use lincanbin\Theseus;
 
-$parser = new TheseusParse();
-$parser->parse(__DIR__ . '/home/Home.tss');
-var_dump($parser);
+$theseus = new Theseus();
+$theseus->display(__DIR__ . '/home/Home.tss');
