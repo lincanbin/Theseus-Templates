@@ -23,44 +23,46 @@
 
 @push('metas')
     <title></title>
-    <script src="{{ domainName.static }}/global.js"></script>
+    <script src="{{ $domainName->static }}/global.js"></script>
 @endpush
 
-@each('Article', 'props')
+@component('Article', 'props')
+    @foreach ($props->data as $item)
     <div class="aritile">
         <div class="user-info">
             <img class="avatar"
-                src="{{ props.author.avatarUrl }}"
-                alt="{{ props.author.name }}"
+                src="{{ $item->author->avatarUrl }}"
+                alt="{{ $item->author->name }}"
             />
             <div class="user-name">
-                {{ props.author.name }}
+                {{ $item->author->name }}
             </div>
         </div>
         <div class="article-text">
-            <a href="{{ props.link }}">
+            <a href="{{ $item->link }}">
                 <h2>
-                    {{ props.title }}
+                    {{ $item->title }}
                 </h2>
             </a>
-            {{ props.text }}
+            {{ $item->text }}
         </div>
         <div class="article-date">
-            {{ formatDate(props.date) }}
+            {{ formatDate($item->date) }}
         </div>
     </div>
-@endeach
+    @endforeach
+@endcomponent
 
 <Layout>
     <Content>
         <Article data=""/ >
     </Content>
-    <Sider qrCode="{{ qrCode }}">
+    <Sider qrCode="{{ $qrCode }}">
         SiderContent
     </Sider>
 </Layout>
 
 
 @push('bottom')
-    <script src="{{ domainName.static }}/home.js"></script>
+    <script src="{{ $domainName->static }}/home.js"></script>
 @endpush

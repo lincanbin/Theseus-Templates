@@ -1,7 +1,7 @@
 @component('Sidebar')
 <div class="sider">
-    <a href="{{ props.qrCode.link }}">
-        <img src="{{ props.qrCode.imgSrc }}" />
+    <a href="{{ $props->qrCode->link }}">
+        <img src="{{ $props->qrCode->imgSrc }}" />
     </a>
     @yield
     <p>This is appended to the master sidebar.</p>

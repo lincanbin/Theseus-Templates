@@ -7,6 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cmn-Hans"
 	  lang="zh-cmn-Hans">
     <head>
+        <stack data="metas"/>
         <meta name="renderer" content="webkit"/>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
         <meta http-equiv="Cache-Control" content="no-siteapp"/>
@@ -35,9 +36,6 @@
         <link rel="search" type="application/opensearchdescription+xml"
               title="Carbon Forum"
               href="/search.xml"/>
-        <!-- Head Contents -->
-
-        @stack('metas')
 
     </head>
     <body>
@@ -45,7 +43,7 @@
         <Container>
             @yield
         </Container>
-
+    <stack data="bottom"/>
     </body>
 </html>
 @endcomponent
