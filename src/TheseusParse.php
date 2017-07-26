@@ -6,15 +6,15 @@ use \Exception;
 
 class TheseusParse
 {
+    private $componentPointer;
+    public $maxDepth;
     public $filePath;
     public $component;
-    private $componentPointer;
     public $stack;
     public $data;
     public $templateBuffer;
     const END_TAG = [
         '@endcomponent',
-        '@endeach',
         '@endpush',
         '@enddata'
     ];
@@ -22,16 +22,19 @@ class TheseusParse
 
     public function parse($fileName)
     {
+        $this->maxDepth = 0;
         $this->filePath = dirname($fileName);
         $this->component = [];
         $this->componentPointer = null;
         $this->stack = [];
+        $this->data = '';
         $this->templateBuffer = '';
         $this->_parse($fileName, 0);
     }
 
     private function _parse($fileName, $depth)
     {
+        $this->maxDepth = max($this->maxDepth, $depth);
         $handle = @fopen($fileName, "r");
         if ($handle !== false) {
             while (($line = fgets($handle, 4096)) !== false) {
@@ -57,44 +60,35 @@ class TheseusParse
 
             //var_dump($importFileName);
             $this->_parse(dirname($fileName) . '/' . $componentName . 'Component.tss', ++$depth);
-        } else if (preg_match("/^@component\([\'\"](.*)[\'\"]\)$/i", $line, $componentParameters) > 0) {
+        } else if (preg_match("/^@component\([\'\"]([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)[\'\"](,\s?[\'\"]([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)[\'\"])?\)$/i", $line, $componentParameters) > 0) {
             if (is_null($this->componentPointer) === false) {
-                throw new Exception("Missing @endcomponent or @endeach or @endpush
+                throw new Exception("Missing @endcomponent or @endpush
                 in " . $fileName . ", Unclosed component " . $this->componentPointer[1] . ".");
             }
-            $componentName = $componentParameters[1];
-            $this->component[$componentName] = [
-                'type'     => 'component',
-                'buffer'   => '',
-                'depth'    => $depth,
-                'itemName' => ''
-            ];
+            //var_dump($componentParameters);
+            $componentName = strtolower($componentParameters[1]);
+            $itemName = !empty($componentParameters[3]) ? $componentParameters[3] : '';
+            if (empty($this->component[$componentName])) {
+                $this->component[$componentName] = [
+                    'type'     => 'component',
+                    'buffer'   => '',
+                    'depth'    => $depth,
+                    'itemName' => $itemName
+                ];
+            } else {
+                $this->component[$componentName]['depth'] = $depth;
+            }
             $this->componentPointer = ['component', $componentName];
-        } else if (preg_match("/^@each\([\'\"](.*)[\'\"],\s?[\'\"](.*)[\'\"]\)$/i", $line, $eachParameters) > 0) {
-            if (is_null($this->componentPointer) === false) {
-                throw new Exception("Missing @endcomponent or @endeach or @endpush
-                in " . $fileName . ", Unclosed component " . $this->componentPointer[1] . ".");
-            }
-            $eachName = $eachParameters[1];
-            $itemName = $eachParameters[2];
-            $this->component[$eachName] = [
-                'type'     => 'each',
-                'buffer'   => '',
-                'depth'    => $depth,
-                'itemName' => $itemName
-            ];
-            $this->componentPointer = ['component', $eachName];
-
         } else if (preg_match("/^@push\([\'\"](.*)[\'\"]\)$/i", $line, $stackParameter) > 0) {
             if (is_null($this->componentPointer) === false) {
-                throw new Exception("Missing @endcomponent or @endeach or @endpush 
+                throw new Exception("Missing @endcomponent or @endpush 
                 in " . $fileName . ", Unclosed component " . $this->componentPointer[1] . ".");
             }
             $stackName = $stackParameter[1];
             $this->componentPointer = ['stack', $stackName];
         } else if (preg_match("/^@data$/i", $line, $stackParameter) > 0) {
             if (is_null($this->componentPointer) === false) {
-                throw new Exception("Missing @endcomponent or @endeach or @endpush 
+                throw new Exception("Missing @endcomponent or @endpush 
                 in " . $fileName . ", Unclosed component " . $this->componentPointer[1] . ".");
             }
             $this->componentPointer = ['data', ''];
@@ -102,16 +96,16 @@ class TheseusParse
             $this->componentPointer = null;
         } else {
             if (is_null($this->componentPointer) === true) {
-                $this->templateBuffer .= $line;
+                $this->templateBuffer .= $line . "\n";
             } else {
                 $type = $this->componentPointer[0];
                 $name = $this->componentPointer[1];
                 if ($type === 'component') {
-                    $this->component[$name]['buffer'] .= $line;
+                    $this->component[$name]['buffer'] .= $line . "\n";
                 } else if ($type === 'stack') {
                     $this->stack[$name][] = $line;
                 } else if ($type === 'data') {
-                    $this->data .= $line;
+                    $this->data .= $line . "\n";
                 }
             }
         }
