@@ -26,6 +26,7 @@ class TheseusDOMDocument
         if (!$this->dom) {
             $this->dom = new DOMDocument('1.0', 'UTF-8');
         }
+        $this->dom->encoding = 'utf-8';
         $this->dom->preserveWhiteSpace = true;
         $this->dom->formatOutput = false;
         $this->TEMP_CONTENT = 'a7c598c8-fcb7-4bde-af9c-91c6515fbf7a-lincanbin-' . md5(mt_rand());
@@ -41,7 +42,7 @@ class TheseusDOMDocument
         $html = str_replace(chr(13), '', $html);
         $html = '<?xml version="1.0" encoding="utf-8" ?><' . $this->PARENT_TAG_NAME . '>' . $html . '</' . $this->PARENT_TAG_NAME . '>';
 
-        $this->dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $this->dom->loadHTML($html, LIBXML_HTML_NODEFDTD);
 
     }
 

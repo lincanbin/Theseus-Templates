@@ -40,8 +40,12 @@ class TheseusDOM
 
     public function buildUp($componentHTML)
     {
+
+        //var_dump($componentHTML);
         $this->dom->load($componentHTML);
         $elem = $this->dom->getRealElement();
+        //var_dump($this->getInnerHTML($elem));
+        //var_dump($elem);
         if (is_null($elem)) {
             return '';
         }
@@ -50,7 +54,7 @@ class TheseusDOM
         $result = $this->dom->save();
         //var_dump($result);
         //echo "\n\n\n\n";
-        var_dump($this->dom->dom->doctype);
+        //var_dump($this->dom->dom->doctype);
         return $result;
     }
 
@@ -59,6 +63,23 @@ class TheseusDOM
         $result = false; //是否有替换节点，默认为否
         $nodeName = $elem->nodeName;
         $textContent = $elem->textContent;
+        /*
+                if ($nodeName == 'layout') {
+                    var_dump($this->getInnerHTML($elem));
+                    var_dump($this->parse->component[$nodeName]);
+                    exit();
+                }
+        */
+        if ($nodeName === 'stack' && $elem->hasAttribute('data')) {
+            $stackName = $elem->getAttribute('data');
+            if (!empty($this->parse->stack[$stackName])) {
+                //var_dump($this->parse->stack[$stackName]);
+                $result = true;
+                $this->replaceNodeWithHtml($elem, $this->parse->stack[$stackName]);
+            } else {
+                throw new Exception("undefined stack: " . $stackName);
+            }
+        }
         //var_dump($nodeName);
         if (array_key_exists($nodeName, $this->parse->component)) {
 
@@ -98,6 +119,7 @@ class TheseusDOM
         /**
          * @var DOMNode $child
          */
+        $oldNode->ownerDocument->encoding = 'utf-8';
         foreach ($children as $child) {
             //var_dump($child);
             $importedNode = $oldNode->ownerDocument->importNode($child, true);
@@ -109,13 +131,14 @@ class TheseusDOM
 
     public function getInnerHTML(DOMNode $element)
     {
+        $element->ownerDocument->encoding = 'utf-8';
         $innerHTML = "";
         $children = $element->childNodes;
         /**
          * @var DOMNode $child
          */
         foreach ($children as $child) {
-            if (!in_array($child->nodeName, $this->emptyElementList) && !$this->isValidText($child->textContent)) {
+            if ($child->hasChildNodes() === false && !in_array($child->nodeName, $this->emptyElementList) && !$this->isValidText($child->textContent)) {
                 $child->nodeValue = $this->dom->TEMP_CONTENT;
             }
             $innerHTML .= $element->ownerDocument->saveHTML($child);

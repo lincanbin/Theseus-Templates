@@ -68,9 +68,11 @@ class TheseusParse
             //var_dump($componentParameters);
             $componentName = strtolower($componentParameters[1]);
             $itemName = !empty($componentParameters[3]) ? $componentParameters[3] : '';
+            if ($componentName === 'stack') {
+                throw new Exception("Invalid component name 'stack'. ");
+            }
             if (empty($this->component[$componentName])) {
                 $this->component[$componentName] = [
-                    'type'     => 'component',
                     'buffer'   => '',
                     'depth'    => $depth,
                     'itemName' => $itemName
@@ -85,6 +87,7 @@ class TheseusParse
                 in " . $fileName . ", Unclosed component " . $this->componentPointer[1] . ".");
             }
             $stackName = $stackParameter[1];
+            $this->stack[$stackName] = '';
             $this->componentPointer = ['stack', $stackName];
         } else if (preg_match("/^@data$/i", $line, $stackParameter) > 0) {
             if (is_null($this->componentPointer) === false) {
@@ -103,7 +106,7 @@ class TheseusParse
                 if ($type === 'component') {
                     $this->component[$name]['buffer'] .= $line . "\n";
                 } else if ($type === 'stack') {
-                    $this->stack[$name][] = $line;
+                    $this->stack[$name] .= $line . "\n";
                 } else if ($type === 'data') {
                     $this->data .= $line . "\n";
                 }

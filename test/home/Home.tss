@@ -55,7 +55,7 @@
 
 <Layout>
     <Content>
-        <Article data=""/ >
+        <Article></Article>
     </Content>
     <Sider qrCode="{{ $qrCode }}">
         SiderContent

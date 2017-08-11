@@ -29,6 +29,8 @@ class Theseus
         }
         $this->parse->templateBuffer = $theseusDOM->buildUp($this->parse->templateBuffer);
         var_dump($this->parse);
+
+        //echo ($this->parse->templateBuffer);
     }
 
     public function getComponentBuildUpList()
